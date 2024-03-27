@@ -1,0 +1,307 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HDFS文件纠删码技术 | 天涯路远</title><meta name="author" content="Diego"><meta name="copyright" content="Diego"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="HDFS文件纠删码技术学习笔记  HDFS的三副本技术 HDFS（Hadoop Distributed File System）是基于 流数据 访问模式的 分布式文件系统 ，其设计建立在 “一次写入、多次读取” 的基础上，提供高吞吐量、高容错性、高可靠性的数据访问，能很好地解决海量数据的存储问题。"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg"><link rel="canonical" href="https://diego369.github.io/2022/04/19/ErasuredCode/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Diego","link":"链接: ","source":"来源: 天涯路远","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HDFS文件纠删码技术',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-27 18:26:43'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><script src="/live2d-widget/autoload.js"></script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/Diego369/img/blog/202204191947829.jpeg')"><nav id="nav"><span id="blog-info"><a href="/" title="天涯路远"><span class="site-name">天涯路远</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">HDFS文件纠删码技术</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-04-19T19:29:48.000Z" title="发表于 2022-04-19 19:29:48">2022-04-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-03-27T18:26:43.811Z" title="更新于 2024-03-27 18:26:43">2024-03-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="HDFS文件纠删码技术"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>HDFS文件纠删码技术学习笔记</p>
+</blockquote>
+<h2 id="HDFS的三副本技术">HDFS的三副本技术</h2>
+<p>HDFS（Hadoop Distributed File System）是基于 流数据 访问模式的 分布式文件系统 ，其设计建立在 “一次写入、多次读取” 的基础上，提供高吞吐量、高容错性、高可靠性的数据访问，能很好地解决海量数据的存储问题。</p>
+<p>高可靠性。数据自动保存多个副本，通过多副本提高可靠性。</p>
+<p>HDFS 默认保存 3 份副本。</p>
+<p>第一个副本：放置在 上传文件 的数据节点（第一个副本如果是在 集群外 提交，则随机挑选一个 CPU 比较空闲 、 磁盘不太满 的节点）；<br>
+第二个副本：放置在与 第一个副本 不同 的机架的节点上；<br>
+第三个副本：放在与 第二个副本 相同 的机架的其他节点上。</p>
+<p>缺点：冗余度高：3</p>
+<p>(HDFS过去使用暴力的三副本技术，随着数据量越来越大，现代数据中心越来越多的使用纠删码技术来减少冗余度，同时保证了数据的容错性。)</p>
+<p>Hadoop3.x 使用纠删码，将冗余度从3倍降低到1.4倍左右</p>
+<h2 id="纠删码（ErasuredCode-EC）">纠删码（ErasuredCode/EC）</h2>
+<p>Erasure Code是一种编码技术，它可以将n份原始数据，增加m份数据，并能通过n+m份中的任意n份数据，还原为原始数据。即如果有任意小于等于m份的数据失效，仍然能通过剩下的数据还原出来。 纠删码技术在分布式存储 系统中的应用主要有三类，阵列纠删码（Array Code: RAID5、RAID6等）、RS(Reed-Solomon)里德-所罗门类纠删码和LDPC(LowDensity Parity Check Code)低密度奇偶校验纠删码。 LDPC码目前主要用于通信、视频和音频编码等领域。</p>
+<p>多副本策略即将数据存储多个副本（一般是三副本，比如HDFS），当某个副本丢失时，可以通过其他副本复制回来。三副本的磁盘利用率为1/3。</p>
+<p>纠删码技术主要是通过纠删码算法将原始的数据进行编码得到冗余，并将数据和冗余一并存储起来，以达到容错的目的。其基本思想是将n块原始的数据元素通过一定的计算，得到m块冗余元素（校验块）。对于这n+m块的元素，当其中任意的m块元素出错（包括原始数据和冗余数据）时，均可以通过对应的重构算法恢复出原来的n块数据。生成校验的过程被成为编码（encoding），恢复丢失数据块的过程被称为解码（decoding）。磁盘利用率为n/(n+m)。基于纠删码的方法与多副本方法相比具有冗余度低、磁盘利用率高等优点。</p>
+<table>
+<thead>
+<tr>
+<th>两种技术</th>
+<th>冗余度</th>
+<th>计算开销</th>
+<th>网络消耗</th>
+<th>恢复效率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多副本(3副本)</td>
+<td>3</td>
+<td>几乎没有</td>
+<td>较低</td>
+<td>较高</td>
+</tr>
+<tr>
+<td>纠删码(n+m)</td>
+<td>(n+m)/n</td>
+<td>高</td>
+<td>较高</td>
+<td>较低</td>
+</tr>
+</tbody>
+</table>
+<h3 id="RS码原理">RS码原理</h3>
+<p>以n=5，m=3为例。即5个原始数据块，乘上一个(n+m)*n的矩阵，然后得出一个(n+m)*1的矩阵。根据矩阵特点可以得知结果矩阵中前面5个值与原来的5个数据块的值相等，而最后3个则是计算出来的校验块。</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195102015.png" class="" title="image-20220419195102015">
+<p>以上过程为编码过程。D是原始数据块，得到的C为校验块。</p>
+<p>假设丢失了m块数据。如下：</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195128558.png" class="" title="image-20220419195128558">
+<p>那我们如何从剩余的n个数据块（注意，这里剩余的n块可能包含几个原始数据块+几个校验块）恢复出来原始的n个数据块呢，就需要通过下面的decoding（解码）过程来实现。</p>
+<p>第一步：从编码矩阵中删去丢失数据块和丢失编码块对应行。 将删掉m个块的(n+m)<em>1个矩阵变形为n</em>1矩阵，同时B矩阵也需要删掉对应的m个行得出一个B’的变形矩阵，这个B’就是n*n矩阵。如下：假设D1、D4、C2丢失，我们得到如下B’矩阵及等式。</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195202776.png" class="" title="image-20220419195202776">
+<p>第二步：求出B’的逆矩阵。</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195253655.png" class="" title="image-20220419195253655">
+<p>第三步：等式两边分别乘上B’的逆矩阵。</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195308356.png" class="" title="image-20220419195308356">
+<p>B’和它的逆矩阵相乘得到单位矩阵I，如下：</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195322435.png" class="" title="image-20220419195322435">
+<p>左边只剩下原始数据矩阵D：</p>
+<img src="/2022/04/19/ErasuredCode/image-20220419195336625.png" class="" title="image-20220419195336625">
+<p>至此完成解码过程。</p>
+<blockquote>
+<p>注1：图中黄色部分为范德蒙矩阵。至于如何生成B矩阵，以及如何求B’的逆矩阵，请查看其他相关文献，这里不再赘述。</p>
+<p>注2：m的值决定了最多可同时容忍的坏块数量。m越大，容错越强，但冗余度也越大。</p>
+</blockquote>
+<h3 id="优缺点">优缺点</h3>
+<p>低冗余度，高磁盘利用率。</p>
+<p>数据更新代价高。 数据更新相当于重新编码， 代价很高， 因此常常针对只读数据，或者冷数据。</p>
+<p>数据恢复代价高。 丢失数据块或者编码块时， RS需要读取n个数据块和校验块才能恢复数据， 数据恢复效率也在一定程度上制约了RS的可靠性。</p>
+<p><strong>优化方案</strong></p>
+<p>最佳的解决方案是<strong>分组</strong>，把单个磁盘故障的影响范围缩小到各个组内部，当磁盘出现故障时，在该组内部解决，在恢复过程中读组内更少的盘，跑更少的网络流量，从而减小对全局的影响。</p>
+<h2 id="LRC">LRC</h2>
+<p>LRC(Locally Repairable Codes)意为局部校验编码，其核心思想为:</p>
+<p>将校验块分为全局校验块和局部校验块，在故障恢复时分组计算。</p>
+<p>微软 Azure 和 Facebook 通过这项技术将数据冗余度降低到 1.33x 和 1.4x。</p>
+<p>以微软 Azure 的云存储(Windows Azure Storage)实现为例：</p>
+<p>它采用LRC(12，2，2)编码，12个数据块为一组编码，并进一步将这12个数据块平均分为两个本地组，每个本地组包括6个数据块，并分别计算出一个局部校验块，之后把所有12个数据块计算出两个全局校验块。<br>
+当发生任何一个数据块错误时，只需将本地组内的数据和校验块用于计算，即可恢复出原始数据。<br>
+恢复代价(通过网络传输的数据块数量)就由传统RS(12，4)编码的12变为6，恢复过程的网络IO开销减半，同时空间冗余率保持不变，仍为(12+2+2)/12=1.33</p>
+<blockquote>
+<p>当前LRC的主流优化方向之一就是选取合适的分组方式和校验块数量，保证容错的同时尽可能降低冗余度。</p>
+</blockquote>
+<h2 id="基于修复分层的纠删码技术-DRC">基于修复分层的纠删码技术-DRC</h2>
+<blockquote>
+<p>在节点内部做一定的计算，从而减少修复时的传输流量</p>
+</blockquote>
+<p>DoubleR 提出修复分层这一概念，该概念将修复操作分成内部机架和交叉机架 层。具体而言，DoubleR 选择分层块放置，每个机架放置一个条带的多个块，从而以减少机架级别容 错为代价，最小化交叉机架恢复流量。为了修复一个坏块，每个机架一个选定节点能使用相同机架中 其他可用块来执行部分修复操作，然后发送该机架的部分修复结果到目的节点，目的节点结合多个部 分修复结果来重建坏块。通过修复分层，理论上证明了通过名为 double regenerating codes(DRC) 的一类新的再生码，能最小化交叉机架修复流量。</p>
+<h3 id="DRC基础架构">DRC基础架构</h3>
+<img src="/2022/04/19/ErasuredCode/image-20220412102540275.png" class="" title="image-20220412102540275">
+<p>修复过程：考虑一个由多个机架组成的分层数据中心，每个机架包含多个存储节点。同一个机架 内的多个节点通过机架顶部的交换结构连接，不同机架通过名为网络核心的抽象交换结构连接。修复 坏块是通过位于同一机架（本地机架）和不同机架（非本地机架）的其他节点检索可用块来完成的。 DoubleR 选择一个本地机架节点负责重构坏块，同时在每个非本地机架选择一个 relayer 节点来聚 合转发该机架的修复结果。通常来说，一个中继节点应该是本地存储用于修复的可用块之一，以便节 省内部机架网络传输流量。每个非本地机架中，每个节点发送编码子块到中继节点，中继节点重新编 码这些子块。这些中继节点将重新编码的子块发送到目标处，该目标重构这个坏块。在 DoubleR 部 署中，我们可以指定不同中继节点和目标节点来修复坏块，从而实现并行。</p>
+<h3 id="两大系列-DRC-结构">两大系列 DRC 结构</h3>
+<img src="/2022/04/19/ErasuredCode/image-20220419101306501.png" class="" title="image-20220419101306501">
+<p>两大系列 DRC 分别是 DRC(n, k, n/n-k) 和 DRC(3z, 2z−1, 3)，两大系列 DRC 的修复过程有 差别，但核心思路是一样的。编码后的 n 个数据块存在线性相关，当出现坏块需要修复时，现在本 地机架将一个条带的多个块进行组合，然后将组合结果传输到目标节点即可。组合这一关键步骤大 幅度减少了修复坏块时的交叉流量。图 1展示了两大系列中各一个案例的结构图。</p>
+<h3 id="实验验证">实验验证</h3>
+<p>实验设备：在 11 台机器的集群上进行的。每台机器都有一个四核 3.4 GHz Intel Core I5-3470,16 GIB RAM，以及希捷 ST1000DM003 7200 RPM 1 TIB SATA 硬盘。所有机器都通过 10 GB / S 以太网交换机互连。我们在 10 台机器上部署 Facebook 的 HDFS。一台机器运行 NameNode 和 RaidNode，其他 N 个机器中的每一个都运行（n，k，r）代码的 DataNode，其中 N 在我们的评估 中最多 9 个</p>
+<p>在数据恢复性能的实验评估：只有当交叉机架传输是数据中心的性能瓶颈时，我们才能声称 DRC 与其它纠删码相比具有显著优势。</p>
+<p>在错误读取性能的实验评估：DRC 显示了性能提升通过最小化跨机架修复流量来降低读取性能。</p>
+<p>条带大小和块大小影响评估：条带大小过大或者过小都会引起性能下降，大小适中时块修复吞吐 量均处于较高水准。块大小较小时，块修复吞吐量随着块大小增加而增加，块大小达到一定时（该文 献实验为 64MiB），修复吞吐量达到最大值。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Diego369.github.io">Diego</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://diego369.github.io/2022/04/19/ErasuredCode/">https://diego369.github.io/2022/04/19/ErasuredCode/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://Diego369.github.io" target="_blank">天涯路远</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BA%A0%E5%88%A0%E7%A0%81/">纠删码</a><a class="post-meta__tags" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/">分布式系统</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202204191947829.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/04/13/Shiro/" title="Shiro安全框架"><img class="cover" src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202204132201074.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Shiro安全框架</div></div></a></div><div class="next-post pull-right"><a href="/2022/04/23/logic/" title="逻辑学笔记"><img class="cover" src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202204231633540.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">逻辑学笔记</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Gitalk</span><span id="switch-btn"></span><span class="second-comment">Valine</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Diego</div><div class="author-info__description">碎碎念</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Diego369"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Diego369" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="tencent://message/?uin=374208669" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="mailto:374208669@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HDFS%E7%9A%84%E4%B8%89%E5%89%AF%E6%9C%AC%E6%8A%80%E6%9C%AF"><span class="toc-number">1.</span> <span class="toc-text">HDFS的三副本技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%A0%E5%88%A0%E7%A0%81%EF%BC%88ErasuredCode-EC%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">纠删码（ErasuredCode&#x2F;EC）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RS%E7%A0%81%E5%8E%9F%E7%90%86"><span class="toc-number">2.1.</span> <span class="toc-text">RS码原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">优缺点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LRC"><span class="toc-number">3.</span> <span class="toc-text">LRC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E4%BA%8E%E4%BF%AE%E5%A4%8D%E5%88%86%E5%B1%82%E7%9A%84%E7%BA%A0%E5%88%A0%E7%A0%81%E6%8A%80%E6%9C%AF-DRC"><span class="toc-number">4.</span> <span class="toc-text">基于修复分层的纠删码技术-DRC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DRC%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84"><span class="toc-number">4.1.</span> <span class="toc-text">DRC基础架构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E5%A4%A7%E7%B3%BB%E5%88%97-DRC-%E7%BB%93%E6%9E%84"><span class="toc-number">4.2.</span> <span class="toc-text">两大系列 DRC 结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E9%AA%8C%E8%AF%81"><span class="toc-number">4.3.</span> <span class="toc-text">实验验证</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/08/29/diffusion/" title="Stable Diffusion杂谈"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310082231126.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Stable Diffusion杂谈"/></a><div class="content"><a class="title" href="/2023/08/29/diffusion/" title="Stable Diffusion杂谈">Stable Diffusion杂谈</a><time datetime="2023-08-29T19:00:06.000Z" title="发表于 2023-08-29 19:00:06">2023-08-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/07/08/note-blog/" title="blog笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310081840556.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="blog笔记"/></a><div class="content"><a class="title" href="/2023/07/08/note-blog/" title="blog笔记">blog笔记</a><time datetime="2023-07-08T16:54:54.000Z" title="发表于 2023-07-08 16:54:54">2023-07-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/06/08/commit-style/" title="规范化 Commit"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310081635081.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="规范化 Commit"/></a><div class="content"><a class="title" href="/2023/06/08/commit-style/" title="规范化 Commit">规范化 Commit</a><time datetime="2023-06-08T14:24:32.000Z" title="发表于 2023-06-08 14:24:32">2023-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/03/note-idea/" title="IDEA笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310072147283.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="IDEA笔记"/></a><div class="content"><a class="title" href="/2023/05/03/note-idea/" title="IDEA笔记">IDEA笔记</a><time datetime="2023-05-03T20:37:11.000Z" title="发表于 2023-05-03 20:37:11">2023-05-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/03/note-git/" title="git笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310072036611.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="git笔记"/></a><div class="content"><a class="title" href="/2023/05/03/note-git/" title="git笔记">git笔记</a><time datetime="2023-05-03T20:19:46.000Z" title="发表于 2023-05-03 20:19:46">2023-05-03</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://cdn.jsdelivr.net/gh/Diego369/img/blog/202204191947829.jpeg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Diego</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>鄂ICP备2022014162号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initGitalk = () => {
+    const gitalk = new Gitalk(Object.assign({
+      clientID: '576e732e0d83878d5bfe',
+      clientSecret: '71a5baed5f8ebb48004f591df44ed0830510133b',
+      repo: 'hexo-gitalk',
+      owner: 'Diego369',
+      admin: ['Diego369'],
+      id: '8c815f515beefec5251f88b874a6f22f',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async() => {
+    if (typeof Gitalk === 'function') initGitalk()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk()
+    }
+  }
+  
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  if ('Gitalk' === 'Gitalk' || !true) {
+    if (true) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'MplhLdJOXNK43pp1lAmS2byU-MdYXbMMI',
+      appKey: 'lB0NLKE6DKJfWJJ91bUCnA2Y',
+      avatar: 'monsterid',
+      serverURLs: 'https://mplhldjo.api.lncldglobal.com',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine@1.5.1/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Gitalk' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>

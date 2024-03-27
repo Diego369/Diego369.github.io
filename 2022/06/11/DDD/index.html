@@ -1,0 +1,276 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>DDD | 天涯路远</title><meta name="author" content="Diego"><meta name="copyright" content="Diego"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="随着编程工业化水平的不断加深，各种编程模型层出不穷（比如MVC，MVP等等），伴随着这些编程模型，又有一大批新的概念蜂拥而至，什么VO，BO，PO，DO，DTO之类的，这些新的概念一直以来都是云里雾里，网上虽然也有不少文章来区分这些概念，但看下来基本都是几篇相同的文章转载来转载去，这些文章本身也说的"><link rel="shortcut icon" href="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg"><link rel="canonical" href="https://diego369.github.io/2022/06/11/DDD/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=4.13.0"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":500},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":50,"languages":{"author":"作者: Diego","link":"链接: ","source":"来源: 天涯路远","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.11.1/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'DDD',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2024-03-27 18:26:43'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><link rel="stylesheet" href="/css/custom.css"><script src="/live2d-widget/autoload.js"></script><meta name="generator" content="Hexo 6.1.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221934665.JPG')"><nav id="nav"><span id="blog-info"><a href="/" title="天涯路远"><span class="site-name">天涯路远</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">DDD</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-11T16:02:12.000Z" title="发表于 2022-06-11 16:02:12">2022-06-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-03-27T18:26:43.811Z" title="更新于 2024-03-27 18:26:43">2024-03-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%A1%86%E6%9E%B6/">框架</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="DDD"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>随着编程工业化水平的不断加深，各种编程模型层出不穷（比如MVC，MVP等等），伴随着这些编程模型，又有一大批新的概念蜂拥而至，什么VO，BO，PO，DO，DTO之类的，这些新的概念一直以来都是云里雾里，网上虽然也有不少文章来区分这些概念，但看下来基本都是几篇相同的文章转载来转载去，这些文章本身也说的不明，有些还互相矛盾，再加上有些文章在简化系统里面来使用这些概念，让人越看越迷糊</p>
+<p>什么原因造成了这种混乱的状态，就不深究了，感觉也很难究出所以然来<br>
+因此让我们立足这些概念本身，达成对概念理解的一致性，就足够了，这也是这边文章的主要目的<br>
+鉴于专业术语的解释互联网上太多，一搜一大把，我就不重复一遍术语了，而且说实话，术语太抽象，不利于理解，看完其实没解决啥疑惑，我会尽量用大白话(人话)来做解释，争取让大家都能看明白</p>
+<p>废话不多说，先来看张图<br>
+看完图估计大部分人就已经有了一个直观的感受了</p>
+<img src="/2022/06/11/DDD/v2-24e3ed681c02b6434681719753c53b40_1440w.jpg" class="" title="img">
+<p>面对这个图，让我们先从承上启下的DTO开始入手</p>
+<p><strong>DTO（Data Transfer Object）数据传输对象</strong></p>
+<p>这个传输通常指的前后端之间的传输</p>
+<p>DTO是一个比较特殊的对象，他有两种存在形式：</p>
+<p>在后端，他的存在形式是java对象，也就是在controller里面定义的那个东东，通常在后端不需要关心怎么从json转成java对象的，这个都是由一些成熟的框架帮你完成啦，比如spring框架</p>
+<p>在前端，他的存在形式通常是js里面的对象（也可以简单理解成json），也就是通过ajax请求的那个数据体</p>
+<p>这也是为什么把他画成横跨两层的原因</p>
+<p>这里可能会遇到个问题，现在微服务盛行，服务和服务之间调用的传输对象能叫DTO吗？<br>
+我的理解是看情况<br>
+DTO本身的一个隐含的意义是要能够完整的表达一个业务模块的输出<br>
+如果服务和服务之间相对独立，那就可以叫DTO<br>
+如果服务和服务之间不独立，每个都不是一个完整的业务模块，拆开可能仅仅是因为计算复杂度或者性能的问题，那这就不能够叫做DTO，只能是BO</p>
+<p><strong>VO（View Object/Value Object）视图对象/值对象</strong><br>
+VO就是展示用的数据，不管展示方式是网页，还是客户端，还是APP，只要是这个东西是让人看到的，这就叫VO<br>
+VO主要的存在形式就是js里面的对象（也可以简单理解成json）</p>
+<p><strong>VO和DTO的区别</strong><br>
+主要有两个区别<br>
+一个是字段不一样，VO根据需要会删减一些字段<br>
+另一个是值不一样，VO会根据需要对DTO中的值进行展示业务的解释<br>
+举个简单的例子<br>
+DTO可能是这样的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&quot;gender&quot;</span>:<span class="string">&quot;男&quot;</span>, </span><br><span class="line">    <span class="string">&quot;age&quot;</span>:<span class="number">35</span> </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>对于业务一来说只需要性别，而且因为是一个古风聊天室，也不能直接展示男，因此经过业务解释业务一的VO是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">    <span class="string">&quot;gender&quot;</span>:<span class="string">&quot;公子&quot;</span> </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>对于业务二来说只需要年龄，而且不需要精确的年龄，因此经过业务解释业务二的VO是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123; </span><br><span class="line">    <span class="string">&quot;age&quot;</span>:<span class="string">&quot;30~39&quot;</span> </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p><strong>PO（Persistant Object）持久对象</strong><br>
+PO比较好理解<br>
+简单说PO就是数据库中的记录，一个PO的数据结构对应着库中表的结构，表中的一条记录就是一个PO对象<br>
+通常PO里面除了get，set之外没有别的方法<br>
+对于PO来说，数量是相对固定的，一定不会超过数据库表的数量<br>
+等同于Entity，这俩概念是一致的</p>
+<p><strong>BO（Business Object）业务对象</strong><br>
+BO就是PO的组合<br>
+简单的例子比如说PO是一条交易记录，BO是一个人全部的交易记录集合对象<br>
+复杂点儿的例子PO1是交易记录，PO2是登录记录，PO3是商品浏览记录，PO4是添加购物车记录，PO5是搜索记录，BO是个人网站行为对象<br>
+BO是一个业务对象，一类业务就会对应一个BO，数量上没有限制，而且BO会有很多业务操作，也就是说除了get，set方法以外，BO会有很多针对自身数据进行计算的方法<br>
+为什么BO也画成横跨两层呢？原因是现在很多持久层框架自身就提供了数据组合的功能，因此BO有可能是在业务层由业务来拼装PO而成，也有可能是在数据库访问层由框架直接生成<br>
+很多情况下为了追求查询的效率，框架跳过PO直接生成BO的情况非常普遍，PO只是用来增删改使用</p>
+<p><strong>BO和DTO的区别</strong><br>
+这两个的区别主要是就是字段的删减<br>
+BO对内，为了进行业务计算需要辅助数据，或者是一个业务有多个对外的接口，BO可能会含有很多接口对外所不需要的数据，因此DTO需要在BO的基础上，只要自己需要的数据，然后对外提供<br>
+在这个关系上，通常不会有数据内容的变化，内容变化要么在BO内部业务计算的时候完成，要么在解释VO的时候完成</p>
+<p>OK，到这里这些关系基本就理清楚了</p>
+<p><strong>等等，DO是什么</strong><br>
+DO呢，标题不是还有个DO么？<br>
+上面这些概念基本上已经涵盖了全部的流程，DO只是跟其中一个概念相同<br>
+但是跟哪个概念相同呢？<br>
+现在主要有两个版本<br>
+一个是阿里巴巴的开发手册中的定义<br>
+DO（ Data Object）这个等同于上面的PO<br>
+另一个是在DDD（Domain-Driven Design）领域驱动设计中<br>
+DO（Domain Object）这个等同于上面的BO</p>
+<p><strong>最后，让我们再说说实际应用</strong><br>
+这几个概念很完整，我们在用的时候是必须按这个来做吗？<br>
+当然不是的，系统和系统的复杂度不同，协作水平不同，完全没有必要教条主义，这些概念全上<br>
+上哪些概念，省哪些，我给一些实际建议<br>
+1，PO这个没法省，不管叫PO还是Entity，怎么着都得有<br>
+2，一些工具类的系统和一些业务不是很复杂的系统DTO是可以和BO合并成一个，当业务扩展的时候注意拆分就行<br>
+3，VO是可以第一个优化掉的，展示业务不复杂的可以压根儿不要，直接用DTO<br>
+4，这也是最重要的一条，概念是给人用的，多人协作的时候一定要保证大家的概念一致，赶紧把这篇文章转发给跟你协作的人吧</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://Diego369.github.io">Diego</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://diego369.github.io/2022/06/11/DDD/">https://diego369.github.io/2022/06/11/DDD/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://Diego369.github.io" target="_blank">天涯路远</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%A1%86%E6%9E%B6%E8%AE%BE%E8%AE%A1/">框架设计</a><a class="post-meta__tags" href="/tags/DDD/">DDD</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221934665.JPG" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>赞助</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/05/10/cycle/" title="循环依赖"><img class="cover" src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202205102239227.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">循环依赖</div></div></a></div><div class="next-post pull-right"><a href="/2022/08/21/svg-icon/" title="通过symbol方式使用icon"><img class="cover" src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310072017949.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">通过symbol方式使用icon</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div><div class="comment-switch"><span class="first-comment">Gitalk</span><span id="switch-btn"></span><span class="second-comment">Valine</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div><div><div class="vcomment" id="vcomment"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221758815.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Diego</div><div class="author-info__description">碎碎念</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">27</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">13</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Diego369"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Diego369" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="tencent://message/?uin=374208669" target="_blank" title="QQ"><i class="fab fa-qq"></i></a><a class="social-icon" href="mailto:374208669@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/08/29/diffusion/" title="Stable Diffusion杂谈"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310082231126.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Stable Diffusion杂谈"/></a><div class="content"><a class="title" href="/2023/08/29/diffusion/" title="Stable Diffusion杂谈">Stable Diffusion杂谈</a><time datetime="2023-08-29T19:00:06.000Z" title="发表于 2023-08-29 19:00:06">2023-08-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/07/08/note-blog/" title="blog笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310081840556.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="blog笔记"/></a><div class="content"><a class="title" href="/2023/07/08/note-blog/" title="blog笔记">blog笔记</a><time datetime="2023-07-08T16:54:54.000Z" title="发表于 2023-07-08 16:54:54">2023-07-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/06/08/commit-style/" title="规范化 Commit"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310081635081.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="规范化 Commit"/></a><div class="content"><a class="title" href="/2023/06/08/commit-style/" title="规范化 Commit">规范化 Commit</a><time datetime="2023-06-08T14:24:32.000Z" title="发表于 2023-06-08 14:24:32">2023-06-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/03/note-idea/" title="IDEA笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310072147283.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="IDEA笔记"/></a><div class="content"><a class="title" href="/2023/05/03/note-idea/" title="IDEA笔记">IDEA笔记</a><time datetime="2023-05-03T20:37:11.000Z" title="发表于 2023-05-03 20:37:11">2023-05-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/03/note-git/" title="git笔记"><img src="https://cdn.jsdelivr.net/gh/Diego369/img/blog/202310072036611.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="git笔记"/></a><div class="content"><a class="title" href="/2023/05/03/note-git/" title="git笔记">git笔记</a><time datetime="2023-05-03T20:19:46.000Z" title="发表于 2023-05-03 20:19:46">2023-05-03</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://cdn.jsdelivr.net/gh/Diego369/img/blog/202203221934665.JPG')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Diego</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/"><span>鄂ICP备2022014162号-1</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=4.13.0"></script><script src="/js/main.js?v=4.13.0"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0.33/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"><script>(() => {
+  const initGitalk = () => {
+    const gitalk = new Gitalk(Object.assign({
+      clientID: '576e732e0d83878d5bfe',
+      clientSecret: '71a5baed5f8ebb48004f591df44ed0830510133b',
+      repo: 'hexo-gitalk',
+      owner: 'Diego369',
+      admin: ['Diego369'],
+      id: '594bb7893af070e0b79d72c024b23c7d',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async() => {
+    if (typeof Gitalk === 'function') initGitalk()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js')
+      initGitalk()
+    }
+  }
+  
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  if ('Gitalk' === 'Gitalk' || !true) {
+    if (true) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script><script>(() => {
+  const initValine = () => {
+    const valine = new Valine(Object.assign({
+      el: '#vcomment',
+      appId: 'MplhLdJOXNK43pp1lAmS2byU-MdYXbMMI',
+      appKey: 'lB0NLKE6DKJfWJJ91bUCnA2Y',
+      avatar: 'monsterid',
+      serverURLs: 'https://mplhldjo.api.lncldglobal.com',
+      emojiMaps: "",
+      path: window.location.pathname,
+      visitor: false
+    }, null))
+  }
+
+  const loadValine = async () => {
+    if (typeof Valine === 'function') initValine()
+    else {
+      await getScript('https://cdn.jsdelivr.net/npm/valine@1.5.1/dist/Valine.min.js')
+      initValine()
+    }
+  }
+
+  if ('Gitalk' === 'Valine' || !true) {
+    if (true) btf.loadComment(document.getElementById('vcomment'),loadValine)
+    else setTimeout(loadValine, 0)
+  } else {
+    window.loadOtherComment = loadValine
+  }
+})()</script></div><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/dist/click-heart.min.js" async="async" mobile="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=4.13.0"></script></div></div></body></html>
